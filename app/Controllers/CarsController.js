@@ -3,21 +3,27 @@ import store from "../store.js";
 
 //Private
 function _draw() {
-  let cars = store.State.cars;
   let carsElem = document.getElementById("cars");
-  let template = "";
+  if (store.State.active.cars) {
+    let cars = store.State.cars;
+    let template = "";
 
-  cars.forEach(car => {
-    template += car.Template;
-  });
+    cars.forEach(car => {
+      template += car.Template;
+    });
 
-  carsElem.innerHTML = template;
+    carsElem.innerHTML = template;
+  }
+  else {
+    carsElem.innerHTML = null;
+  }
 }
 
 //Public
 export default class CarsController {
   constructor() {
     store.subscribe("cars", _draw);
+    store.subscribe("active", _draw);
     this.getAllCars();
   }
 
@@ -25,6 +31,12 @@ export default class CarsController {
     CarsService.getCars();
   }
 
+  tabToggle() {
+    store.State.active.houses = false;
+    store.State.active.cars = true;
+    store.State.active.jobs = false;
+    store.commit("active", store.State.active);
+  }
   addCar(event) {
     event.preventDefault();
 
@@ -47,12 +59,10 @@ export default class CarsController {
   }
 
   bid(id, price) {
-    debugger;
     CarsService.editCar(id, { price });
   }
 
   removeImg(id) {
-    debugger;
     CarsService.editCar(id, { imgUrl: "//placehold.it/200x200" });
   }
 
